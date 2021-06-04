@@ -1,6 +1,7 @@
 interface IDefaultResponse {
   result: boolean;
-  data?: any
+  data?: any;
+  error?: any;
 }
 
 export {

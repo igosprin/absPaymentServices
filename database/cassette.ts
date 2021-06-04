@@ -1,4 +1,5 @@
-import { Database } from "../../database";
+import { Database } from "..";
+import { resultBuilder } from "../../common/resultBuilder";
 import { IDefaultResponse } from "../../interfaces/common";
 
 async function getCassettesByTerminalId(id: string): Promise<IDefaultResponse> {
@@ -10,9 +11,9 @@ async function getCassettesByTerminalId(id: string): Promise<IDefaultResponse> {
       params: { terminal_id: id },
     });
 
-    return { result: true, data: cassette }
+    return resultBuilder(true, cassette);
   } catch (error) {
-    throw error;
+    throw new Error(error);
   }
 }
 

@@ -1,4 +1,4 @@
-import { IDefaultResponse } from "../../interfaces/common";
+import { IDefaultResponse } from "../../../interfaces/common";
 import { getCassettesByTerminalId } from "../cassette";
 
 interface ICassette {

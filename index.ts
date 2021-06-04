@@ -30,3 +30,5 @@ console.log(array);
 const newArray = array.map(element => ({ ...element, desc: "desc" + element.id }))
 
 console.log(newArray);
+
+

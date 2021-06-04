@@ -1,5 +1,5 @@
-import { Database } from "../../database";
-import { IDefaultResponse } from "../../interfaces/common";
+import { Database } from "../../../database";
+import { IDefaultResponse } from "../../../interfaces/common";
 
 interface IGetTerminalByAuth {
   uid: string;
