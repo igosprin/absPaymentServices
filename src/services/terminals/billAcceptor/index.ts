@@ -1,7 +1,11 @@
+import { resultBuilder } from "../../../common/resultBuilder";
 import { Database } from "../../../database";
-import { createLevels, IAcceptorLevelsInsertValues } from "../../../database/billAcceptor/levels";
+import { getByTerminalId } from "../../../database/billAcceptor";
+import {
+  createLevels,
+  IAcceptorLevelsInsertValues,
+} from "../../../database/billAcceptor/levels";
 import { IDefaultResponse } from "../../../interfaces/common";
-
 
 interface IAcceptorLevel {
   currency: string;
@@ -14,8 +18,6 @@ interface IAcceptorUpdateLevelsParams {
   session_id: number;
   terminal_id: number;
 }
-
-
 
 interface IAcceptorData {
   model: string;
@@ -32,7 +34,6 @@ async function acceptorUpdateLevels(
 ): Promise<IDefaultResponse> {
   let total_amount = 0;
   try {
-
     const insert: Array<IAcceptorLevelsInsertValues> = levels.map((element) => {
       const { Denomination: amount, count, currency } = element;
       const level: IAcceptorLevelsInsertValues = {
@@ -51,9 +52,9 @@ async function acceptorUpdateLevels(
       return level;
     });
 
-    const { data: cassettes } = await createLevels(insert)
+    const { data: cassettes } = await createLevels(insert);
 
-    return { result: true, data: { total_amount, cassettes  } };
+    return resultBuilder(true, { total_amount, cassettes });
   } catch (error) {
     throw error;
   }
@@ -61,12 +62,7 @@ async function acceptorUpdateLevels(
 
 async function getAcceptorByTerminalId(id: number): Promise<IDefaultResponse> {
   try {
-    const db = new Database();
-    const acceptor = await db.findOne({
-      table: db.tables.acceptors,
-      params: { terminal_id: id },
-    });
-    return { result: true, data: acceptor };
+    return await getByTerminalId(id);
   } catch (error) {
     throw error;
   }

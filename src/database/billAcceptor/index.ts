@@ -1,5 +1,10 @@
+import { createLevels } from './levels'
 import { resultBuilder } from "../../common/resultBuilder";
 import { Database } from "../index";
+
+const levels = {
+  createLevels
+}
 
 async function getByTerminalId(id: number) {
   try {
@@ -15,6 +20,12 @@ async function getByTerminalId(id: number) {
   }
 }
 
+async function create () {
+
+}
+
 export {
-  getByTerminalId
+  getByTerminalId,
+  create,
+  levels
 }

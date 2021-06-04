@@ -64,8 +64,8 @@ class Database {
       const currDate = new Date();
       const newValues = {
         ...values,
-        created_at: dateformat(currDate, "YYYY-MM-DD HH:mm:ss"),
-        updated_at: dateformat(currDate, "YYYY-MM-DD HH:mm:ss"),
+        created_at: dateformat(currDate, "YYYY-MM-DD HH:mm:ss", true),
+        updated_at: dateformat(currDate, "YYYY-MM-DD HH:mm:ss", true),
       };
 
       const sql: string = `INSERT INTO ${table} SET ?`;
