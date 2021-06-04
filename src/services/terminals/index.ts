@@ -5,11 +5,11 @@ const billAcceptor = {
   acceptorUpdateLevels
 }
 
-const conmmon = {
+const common = {
   getTerminalByAuth
 }
 
 
 export {
-  billAcceptor, conmmon
+  billAcceptor, common
 }

@@ -1,5 +1,7 @@
-import { Database } from "../.././database";
+import { Database } from "../../../database";
+import { createLevels, IAcceptorLevelsInsertValues } from "../../../database/billAcceptor/levels";
 import { IDefaultResponse } from "../../../interfaces/common";
+
 
 interface IAcceptorLevel {
   currency: string;
@@ -13,16 +15,7 @@ interface IAcceptorUpdateLevelsParams {
   terminal_id: number;
 }
 
-interface IModelToAcceptorValues {
-  type: string;
-  currency: string;
-  amount: number;
-  count: number;
-  total_amount: number;
-  session_id: number;
-  terminal_id: number;
-  status: boolean;
-}
+
 
 interface IAcceptorData {
   model: string;
@@ -39,11 +32,10 @@ async function acceptorUpdateLevels(
 ): Promise<IDefaultResponse> {
   let total_amount = 0;
   try {
-    const db = new Database();
 
-    const insert: Array<IModelToAcceptorValues> = levels.map((element) => {
+    const insert: Array<IAcceptorLevelsInsertValues> = levels.map((element) => {
       const { Denomination: amount, count, currency } = element;
-      const level: IModelToAcceptorValues = {
+      const level: IAcceptorLevelsInsertValues = {
         amount,
         count,
         currency,
@@ -59,12 +51,9 @@ async function acceptorUpdateLevels(
       return level;
     });
 
-    await db.createMultiple({
-      table: db.tables.acceptorLevels,
-      payload: insert,
-    });
+    const { data: cassettes } = await createLevels(insert)
 
-    return { result: true, data: { total_amount } };
+    return { result: true, data: { total_amount, cassettes  } };
   } catch (error) {
     throw error;
   }
