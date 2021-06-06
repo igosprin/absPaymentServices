@@ -1,11 +1,8 @@
 import { resultBuilder } from "../../../common/resultBuilder";
-import { Database } from "../../../database";
-import { getByTerminalId } from "../../../database/billAcceptor";
-import {
-  createLevels,
-  IAcceptorLevelsInsertValues,
-} from "../../../database/billAcceptor/levels";
+import { getByTerminalId, IAcceptorDataCreate, IAcceptorDataUpdate } from "../../../database/billAcceptor";
+import * as database from "../../../database";
 import { IDefaultResponse } from "../../../interfaces/common";
+import { IAcceptorLevelsInsertValues } from "../../../database/levels";
 
 interface IAcceptorLevel {
   currency: string;
@@ -17,15 +14,6 @@ interface IAcceptorUpdateLevelsParams {
   levels: Array<IAcceptorLevel>;
   session_id: number;
   terminal_id: number;
-}
-
-interface IAcceptorData {
-  model: string;
-  connectionInterface: string;
-}
-
-interface IAcceptorDataCreate extends IAcceptorData {
-  terminalId: number;
 }
 
 async function acceptorUpdateLevels(
@@ -52,11 +40,11 @@ async function acceptorUpdateLevels(
       return level;
     });
 
-    const { data: cassettes } = await createLevels(insert);
+    const { data: cassettes } = await database.levels.createLevels(insert);
 
     return resultBuilder(true, { total_amount, cassettes });
   } catch (error) {
-    throw error;
+    throw new Error(error);
   }
 }
 
@@ -74,44 +62,31 @@ async function createAcceptor({
   terminalId,
 }: IAcceptorDataCreate) {
   try {
-    const db = new Database();
-    const acceptor = await db.createOne({
-      table: db.tables.acceptors,
-      values: {
-        model,
-        connection_interface: connectionInterface,
-        terminal_id: terminalId,
-      },
-    });
-    return { result: true, data: acceptor };
+    return database.billAcceptor.create({ terminalId, connectionInterface, model });
   } catch (error) {
-    throw error;
+    throw new Error(error);
   }
 }
 
 async function updateAcceptorByTerminalId(
   id: number,
-  { model, connectionInterface }: IAcceptorData
+  { model, connectionInterface }: IAcceptorDataUpdate
 ) {
   try {
-    const db = new Database();
-
     let acceptor = await getAcceptorByTerminalId(id);
     if (acceptor.result)
-      acceptor = await db.updateOne({
-        table: db.tables.acceptors,
-        params: { terminal_id: id },
-        values: { model, connection_interface: connectionInterface },
+      acceptor = await database.billAcceptor.updateByTerminalId(id, {
+        model,
+        connectionInterface,
       });
-
     if (!acceptor.result)
-      acceptor = await createAcceptor({
+      acceptor = await database.billAcceptor.create({
         terminalId: id,
         model,
         connectionInterface,
       });
 
-    return { result: true, data: acceptor };
+    return resultBuilder(true, acceptor)
   } catch (error) {
     throw error;
   }
@@ -122,7 +97,6 @@ export {
   acceptorUpdateLevels,
   IAcceptorLevel,
   getAcceptorByTerminalId,
-  IAcceptorData,
   createAcceptor,
   updateAcceptorByTerminalId,
 };

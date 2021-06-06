@@ -5,7 +5,8 @@ const tables = {
   acceptorLevels: 'accepter_levels',
   acceptors: 'terminal_acceptors',
   terminals: 'terminals',
-  cassettes: 'cassettes'
+  cassettes: 'cassettes',
+  dispenser: 'terminal_dispancers'
 };
 
 export { tables };

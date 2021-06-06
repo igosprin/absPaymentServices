@@ -2,7 +2,7 @@ import { Database } from ".";
 import { resultBuilder } from "../common/resultBuilder";
 import { IDefaultResponse } from "../interfaces/common";
 
-async function getByTerminalId(id: string): Promise<IDefaultResponse> {
+async function getByTerminalId(id: number): Promise<IDefaultResponse> {
   try {
     const db = new Database();
 
@@ -18,4 +18,14 @@ async function getByTerminalId(id: string): Promise<IDefaultResponse> {
   }
 }
 
-export { getByTerminalId };
+async function createCassettes(payload): Promise<IDefaultResponse> {
+  try {
+    const db = new Database()
+    return await db.createMultiple({ table: db.tables.cassettes, payload })
+  } catch (error) {
+    console.error(error);
+    throw new Error(error)
+  }
+}
+
+export { getByTerminalId, createCassettes };

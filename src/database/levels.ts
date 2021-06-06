@@ -1,6 +1,6 @@
-import { resultBuilder } from "../../common/resultBuilder";
-import { IDefaultResponse } from "../../interfaces/common";
-import { Database } from "../index";
+import { resultBuilder } from "../common/resultBuilder";
+import { IDefaultResponse } from "../interfaces/common";
+import { Database } from ".";
 
 interface IAcceptorLevelsInsertValues {
   type: string;

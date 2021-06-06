@@ -3,6 +3,12 @@ import { tables } from "./tables";
 import { mysqlConfig } from "../config";
 import dateformat from "dateformat";
 import { IDefaultResponse } from "../interfaces/common";
+import * as billAcceptor from "./billAcceptor";
+import * as billDispenser from "./billDispenser";
+import * as cassettes from "./cassettes";
+import * as terminals from "./terminals";
+import * as levels from "./levels";
+import { resultBuilder } from "../common/resultBuilder";
 
 interface IPayloadFind {
   table: string;
@@ -69,12 +75,12 @@ class Database {
       };
 
       const sql: string = `INSERT INTO ${table} SET ?`;
-      const [rows] = await connection.query(sql, newValues);
+      const result: any = await connection.query(sql, newValues);
 
-      if (!rows)
+      if (!result)
         throw new Error(`Failed to create a record in the table ${table}`);
 
-      return { result: true, data: rows[0] };
+      return resultBuilder(true, { insertId: result[0].insertId });
     } catch (error) {
       console.log(error);
       throw new Error(error);
@@ -97,9 +103,11 @@ class Database {
 
       payload.forEach(async (element) => await connection.query(sql, element));
 
-      await connection.commit();
+      const result = await connection.commit();
 
-      return { result: true };
+      console.log(result);
+      
+      return resultBuilder(true, result);
     } catch (error) {
       throw error;
     } finally {
@@ -132,4 +140,4 @@ class Database {
   }
 }
 
-export { Database };
+export { Database, billAcceptor, billDispenser, cassettes, terminals, levels };
