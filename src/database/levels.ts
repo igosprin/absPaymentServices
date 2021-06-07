@@ -19,12 +19,12 @@ async function createLevels(
   try {
     const db = new Database();
 
-    const data = await db.createMultiple({
+    const result = await db.createMultiple({
       table: db.tables.acceptorLevels,
       payload: insert,
     })[0][0];
 
-    return resultBuilder(true, data);
+    return resultBuilder(true, result.data);
   } catch (error) {
     console.error(error);
     throw new Error(error);

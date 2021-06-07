@@ -21,7 +21,7 @@ async function getByTerminalId(id: number) {
       table: db.tables.acceptors,
       params: { terminal_id: id },
     });
-    return resultBuilder(true, acceptor);
+    return resultBuilder(true, acceptor.data);
   } catch (error) {
     console.error(error);
     throw new Error(error);
@@ -43,7 +43,7 @@ async function create({
         terminal_id: terminalId,
       },
     });
-    return resultBuilder(true, acceptor);
+    return resultBuilder(true, acceptor.data);
   } catch (error) {
     console.log(error);
     throw new Error(error);
@@ -62,7 +62,7 @@ async function updateByTerminalId(
       values: { model, connection_interface },
     })[0][0];
 
-    return resultBuilder(true, result);
+    return resultBuilder(true, result.data);
   } catch (error) {
     console.log(error);
     throw new Error(error);

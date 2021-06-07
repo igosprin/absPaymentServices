@@ -10,9 +10,22 @@ import * as terminals from "./terminals";
 import * as levels from "./levels";
 import { resultBuilder } from "../common/resultBuilder";
 
+interface IPaginate {
+  limit: number;
+  page: number;
+}
+
+interface ISort {
+  operators: Array<string>;
+  keys: Array<string>;
+}
+
 interface IPayloadFind {
   table: string;
   params: any;
+  paginate?: IPaginate;
+  sort?: ISort;
+  columns?: Array<string>
 }
 
 interface IPayloadCreateOne {
@@ -46,9 +59,23 @@ class Database {
     }
   }
 
-  async find({ table, params }: IPayloadFind): Promise<IDefaultResponse> {
+  async find({
+    columns,
+    table,
+    params,
+    paginate: { limit, page },
+    paginate,
+    sort: { keys, operators }
+  }: IPayloadFind): Promise<IDefaultResponse> {
     try {
-      let sql: string = `SELECT * from ${table} WHERE ?`;
+      let sql: string = `SELECT ${columns ? columns.join(' ,') : '*'} from ${table} WHERE ?`;
+
+      if (paginate) sql += ` LIMIT = ${limit} OFFSET = ${page * limit}`;
+      
+      if (keys) sql += ` ORDER BY ${keys.join(',')}`
+      
+      if (operators) sql += ` ${operators.join(' ')}`
+      
       const connection = await createConnection(mysqlConfig);
       const [rows, fields] = await connection.query(sql, params);
       await connection.destroy();
@@ -106,7 +133,7 @@ class Database {
       const result = await connection.commit();
 
       console.log(result);
-      
+
       return resultBuilder(true, result);
     } catch (error) {
       throw error;

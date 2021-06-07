@@ -11,7 +11,7 @@ async function getByTerminalId(id: number): Promise<IDefaultResponse> {
       params: { terminal_id: id },
     });
 
-    return resultBuilder(true, cassette);
+    return resultBuilder(true, cassette.data);
   } catch (error) {
     console.error(error)
     throw new Error(error);

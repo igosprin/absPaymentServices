@@ -20,12 +20,12 @@ async function getSettingMaintenance({ uid }): Promise<IDefaultResponse> {
   try {
     const terminal: any = await database.terminals.getOneByTerminalUid(uid);
 
-    const saltRounds = 10; // Its default value
+    const saltRounds = 10; // Its default value for salt
 
     const salt = await bcrypt.genSalt(saltRounds);
     const hash = await bcrypt.hash("anyValue", salt);
 
-    const result = database.terminals.changePasswordById(terminal.id, {
+    const result = await database.terminals.changePasswordById(terminal.id, {
       passwd: hash,
     });
 
@@ -38,13 +38,48 @@ async function getSettingMaintenance({ uid }): Promise<IDefaultResponse> {
 
 async function getTerminalByUid(uid: string): Promise<IDefaultResponse> {
   try {
-    const terminal = database.terminals.getOneByTerminalUid(uid);
+    const terminal = await database.terminals.getOneByTerminalUid(uid);
 
-    return resultBuilder(true, terminal);
+    return resultBuilder(true, terminal.data);
   } catch (error) {
     console.error(error);
     throw new Error(error);
   }
 }
 
-export { getTerminalByAuth, getSettingMaintenance, getTerminalByUid };
+async function getTerminalsByTerminalIdAndPaginateSort(
+  id,
+  { page, limit },
+  { keys, operators }
+): Promise<IDefaultResponse> {
+  try {
+    const result =
+      await database.terminals.getTerminalsWithTerminalIdAndPaginateSort(
+        id,
+        { limit, page },
+        { keys, operators }
+      );
+
+    return resultBuilder(true, result.data);
+  } catch (error) {
+    console.error(error);
+    throw new Error(error);
+  }
+}
+
+async function getTerminalsNameById(ids: Array<string> | string): Promise<IDefaultResponse> {
+  try {
+    return await database.terminals.getTerminalsNames(ids)
+  } catch (error) {
+    console.error(error);
+    throw new Error(error);
+  }
+}
+
+
+export {
+  getTerminalByAuth,
+  getSettingMaintenance,
+  getTerminalByUid,
+  getTerminalsByTerminalIdAndPaginateSort,
+};
